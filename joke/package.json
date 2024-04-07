@@ -2,7 +2,7 @@
   "name": "joke",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://github.com/minhthang2k1/test_zens/",
+  "homepage": "https://github.com/minhthang2k1/test_zens/joke/",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
