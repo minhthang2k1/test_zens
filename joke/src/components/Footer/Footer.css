@@ -22,4 +22,8 @@
     font-size: 13px;
     margin-bottom: 26px;
   }
+
+  .copyright {
+    font-weight: 300;
+  }
 }
