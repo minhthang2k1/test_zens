@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { notification } from "antd";
+
 import "./Content.css";
 
 const Content = () => {
@@ -26,23 +28,37 @@ const Content = () => {
     const savedJokes = localStorage.getItem("displayedJokes");
     return savedJokes ? JSON.parse(savedJokes) : [];
   });
+  const [votedJokes, setVotedJokes] = useState(() => {
+    const savedVotes = localStorage.getItem("votedJokes");
+    return savedVotes ? JSON.parse(savedVotes) : {};
+  });
 
   useEffect(() => {
     localStorage.setItem("displayedJokes", JSON.stringify(displayedJokes));
   }, [displayedJokes]);
 
   useEffect(() => {
+    localStorage.setItem("votedJokes", JSON.stringify(votedJokes));
+  }, [votedJokes]);
+
+  useEffect(() => {
     handleNextJoke();
   }, []);
 
   const handleNextJoke = () => {
-    if (displayedJokes.length === Jokes.length) return setCurrentJokeIndex(-1);
+    if (displayedJokes.length === Jokes.length) {
+      notification.error({
+        message: "That's all the jokes for today! Come back another day!",
+        duration: 4,
+      });
+      return setCurrentJokeIndex(-1);
+    }
 
     const remainingJokes = Jokes.filter(
       (joke) => !displayedJokes.includes(joke.desc)
     );
 
-    if (remainingJokes.length >= 0) {
+    if (remainingJokes.length > 0) {
       const randomIndex = Math.floor(Math.random() * remainingJokes.length);
       const nextJoke = remainingJokes[randomIndex];
       const nextJokeIndex = Jokes.findIndex(
@@ -53,18 +69,21 @@ const Content = () => {
     } else {
       setCurrentJokeIndex(-1);
     }
-    console.log("remain", remainingJokes);
-    console.log("current", currentJokeIndex);
-    console.log("display", displayedJokes);
   };
 
-  const disableButtons =
-    currentJokeIndex === -1 || displayedJokes.length > Jokes.length;
+  const handleVote = (voteType) => {
+    if (currentJokeIndex !== -1) {
+      const jokeId = Jokes[currentJokeIndex].id;
+      setVotedJokes((prevVotes) => ({
+        ...prevVotes,
+        [jokeId]: voteType,
+      }));
+    }
+  };
 
   return (
-   <div className="container">
-     <div id="content">
-      <div className="content">
+    <div className="container">
+      <div id="content" className="content">
         <p className="desc">
           {currentJokeIndex === -1
             ? "That's all the jokes for today! Come back another day!"
@@ -73,22 +92,25 @@ const Content = () => {
         <div className="btn">
           <button
             className="funny"
-            onClick={handleNextJoke}
-            disabled={disableButtons}
+            onClick={() => {
+              handleNextJoke();
+              handleVote("funny");
+            }}
           >
             This is funny!
           </button>
           <button
             className="bore"
-            onClick={handleNextJoke}
-            disabled={disableButtons}
+            onClick={() => {
+              handleNextJoke();
+              handleVote("boring");
+            }}
           >
             This is not funny.
           </button>
         </div>
       </div>
     </div>
-   </div>
   );
 };
 
