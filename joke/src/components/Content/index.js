@@ -47,7 +47,7 @@ const Content = () => {
 
   const handleNextJoke = () => {
     if (displayedJokes.length === Jokes.length) {
-      notification.error({
+      notification.info({
         message: "That's all the jokes for today! Come back another day!",
         duration: 4,
       });
